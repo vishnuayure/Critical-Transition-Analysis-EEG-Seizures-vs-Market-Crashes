@@ -1,194 +1,179 @@
-# ⚡ Critical Transition Analysis: EEG Seizures vs Market Crashes
+# 🧠📉 Critical Transitions: EEG vs Financial Markets
 
-> *Do complex systems fail the same way?*
+> **Do a brain about to seize and a stock market about to crash follow the same mathematical warning patterns?**
 
-What if a brain approaching seizure and a market approaching crash are — mathematically — the same event?
-
-This project explores whether **EEG neural activity** and **financial market dynamics** share common warning signatures before catastrophic state transitions. The hypothesis: radically different systems may obey the same underlying mathematics when they approach instability.
+This project applies **Critical Transition Theory** — a framework from physics and ecology — to two completely different complex systems: epileptic brain signals (EEG) and the S&P 500 index before the 2008 Lehman Brothers collapse.
 
 ---
 
-## 🧠 The Core Idea
+## 🔬 The Core Hypothesis
 
-Across physics, ecology, and neuroscience, a phenomenon called **critical slowing down** appears before systems tip from one state into another. As a system approaches a tipping point, it loses its ability to recover from small perturbations — and this leaves measurable fingerprints in the data before the collapse ever happens.
+> Brain activity before a seizure and stock market prices before a crash both exhibit the same universal mathematical warning signals as they approach a tipping point.
 
-| Warning Signal | Seizure (EEG) | Market Crash |
+This idea comes from a field called **Complex Systems Science**. The theory is called **Critical Slowing Down (CSD)** — and it predicts that *any* complex system near a collapse will show measurable warning signs, regardless of whether it's biological, financial, or ecological.
+
+---
+
+## 📐 What is Critical Slowing Down?
+
+When a complex system (brain, market, ecosystem) nears a **critical transition** (seizure, crash, extinction), it loses its ability to bounce back from small disturbances. This shows up mathematically as:
+
+| Warning Signal | What it means | Why it rises |
 |---|---|---|
-| Rising autocorrelation | Neural activity becomes "stickier" | Price returns show memory |
-| Increasing variance | Amplitude swells pre-ictal | Volatility expands |
-| Slowing recovery rate | Brain struggles to dampen oscillations | Market takes longer to absorb shocks |
-| Cross-correlation changes | Regions synchronize abnormally | Assets that shouldn't move together, do |
+| **Variance ↑** | Fluctuations grow bigger | System is less stable, wobbles more |
+| **Lag-1 Autocorrelation ↑** | The system's memory gets longer | Recovery from shocks becomes slower |
+| **\|Skewness\| ↑** | The distribution becomes lopsided | System is being pushed asymmetrically toward the tipping point |
 
-The bet this project is making: **these fingerprints are domain-agnostic.**
-
----
-
-## 📐 Framework
-
-```
-Raw Data (EEG / OHLCV)
-        │
-        ▼
- Preprocessing & Windowing
-        │
-        ├──► Sliding window variance
-        ├──► Lag-1 autocorrelation (AR1)
-        ├──► Detrended Fluctuation Analysis (DFA)
-        ├──► Power Spectral Density shift
-        └──► Early Warning Score (composite)
-                │
-                ▼
-        Tipping Point Proximity Map
-```
+These are called **Early Warning Signals (EWS)**.
 
 ---
 
-## 🗂️ Repository Structure
+## 📦 Datasets Used
 
-```
-critical-transition-analysis/
-│
-├── data/
-│   ├── eeg/                  # Raw EEG recordings (.edf, .csv)
-│   ├── market/               # OHLCV price data
-│   └── processed/            # Windowed, normalized datasets
-│
-├── notebooks/
-│   ├── 01_eeg_exploration.ipynb        # EEG signal basics & nomenclature
-│   ├── 02_market_exploration.ipynb     # Market regime analysis
-│   ├── 03_early_warning_signals.ipynb  # CSD metrics: variance, AR1, DFA
-│   ├── 04_cross_domain_comparison.ipynb # Side-by-side signature analysis
-│   └── 05_composite_score.ipynb        # Building an EWS composite index
-│
-├── src/
-│   ├── signals/
-│   │   ├── autocorrelation.py    # Lag-1 AR estimation
-│   │   ├── variance.py           # Rolling variance + detrending
-│   │   ├── dfa.py                # Detrended Fluctuation Analysis
-│   │   └── psd.py                # Power spectral density tools
-│   │
-│   ├── eeg/
-│   │   ├── loader.py             # EDF/CSV parsing
-│   │   ├── bandpass.py           # Delta, theta, alpha, beta, gamma filters
-│   │   └── epoch.py              # Segmentation around seizure events
-│   │
-│   ├── market/
-│   │   ├── loader.py             # Price data ingestion
-│   │   ├── regimes.py            # Bull/bear/crash labeling
-│   │   └── volatility.py         # GARCH, realized vol, VIX proxy
-│   │
-│   └── utils/
-│       ├── windowing.py          # Sliding window utilities
-│       └── visualization.py     # Shared plotting helpers
-│
-├── results/
-│   ├── figures/                  # Generated plots
-│   └── reports/                  # Analysis summaries
-│
-├── tests/
-│   └── ...
-│
-├── requirements.txt
-├── environment.yml
-└── README.md
-```
-
----
-
-## 🔬 EEG Primer (Work in Progress)
-
-*This section grows as I learn the domain.*
-
-**Electrode Nomenclature (10-20 System)**
-- Letters indicate brain region: `F` (frontal), `T` (temporal), `P` (parietal), `O` (occipital), `C` (central)
-- Numbers: odd = left hemisphere, even = right, `z` = midline
-- Common channels: `Fp1`, `Fp2`, `F3`, `F4`, `C3`, `C4`, `P3`, `P4`, `O1`, `O2`
-
-**Frequency Bands**
-| Band | Range | Association |
+| Dataset | Source | What it is |
 |---|---|---|
-| Delta (δ) | 0.5–4 Hz | Deep sleep, pathological slow waves |
-| Theta (θ) | 4–8 Hz | Drowsiness, memory |
-| Alpha (α) | 8–13 Hz | Relaxed wakefulness |
-| Beta (β) | 13–30 Hz | Active thinking, alertness |
-| Gamma (γ) | 30–100 Hz | High-level cognition, binding |
+| **CHB-MIT EEG** | [PhysioNet](https://physionet.org/content/chbmit/) | Real pediatric epilepsy EEG recordings with annotated seizure timestamps |
+| **S&P 500** | Yahoo Finance (`yfinance`) | Daily OHLCV price data from 2006–2009 covering the Lehman Brothers collapse |
 
-**Seizure Phases**
-1. **Interictal** — baseline, no seizure activity
-2. **Pre-ictal** — warning window (where early signals live)
-3. **Ictal** — the seizure itself
-4. **Post-ictal** — recovery
+If PhysioNet or Yahoo Finance is unreachable, the code automatically generates **physiologically grounded synthetic data** that mimics the real signals.
 
 ---
 
-## 📊 Datasets
+## 🗂️ Directory Structure
 
-**EEG Sources**
-- [CHB-MIT Scalp EEG Database](https://physionet.org/content/chbmit/1.0.0/) (PhysioNet)
-- [Bonn EEG Dataset](https://www.ukbonn.de/epileptologie/arbeitsgruppen/ag-lehnertz-neurophysik/downloads/)
-- Temple University Hospital EEG Corpus
-
-**Market Sources**
-- S&P 500 daily / intraday (Yahoo Finance, Quandl)
-- VIX index for implied volatility baseline
-- Historical crash events: 1987, 2000, 2008, 2020
+```
+critical-transitions-eeg-vs-market/
+│
+├── README.md                          ← You are here
+│
+├── notebook/
+│   └── critical_transitions_eeg_vs_market.ipynb   ← Main analysis notebook
+│
+├── outputs/
+│   └── critical_transitions_results.png           ← Auto-generated result figure
+│
+├── requirements.txt                   ← Python dependencies
+└── .gitignore                         ← Ignore cache, outputs, etc.
+```
 
 ---
 
-## 🚀 Getting Started
+## ⚙️ Setup & Usage
 
+### 1. Clone the repo
 ```bash
-git clone https://github.com/your-username/critical-transition-analysis.git
-cd critical-transition-analysis
-
-# Using conda (recommended)
-conda env create -f environment.yml
-conda activate cta
-
-# Or pip
-pip install -r requirements.txt
-
-# Run the first exploration notebook
-jupyter notebook notebooks/01_eeg_exploration.ipynb
+git clone https://github.com/YOUR_USERNAME/critical-transitions-eeg-vs-market.git
+cd critical-transitions-eeg-vs-market
 ```
 
-**Core dependencies:** `numpy`, `scipy`, `pandas`, `mne` (EEG), `yfinance`, `matplotlib`, `seaborn`, `statsmodels`
+### 2. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Run the notebook
+```bash
+jupyter notebook notebook/critical_transitions_eeg_vs_market.ipynb
+```
+
+Run all cells from top to bottom. The final figure is saved as `outputs/critical_transitions_results.png`.
 
 ---
 
-## 📈 Current Status
+## 📊 What the Code Does — Step by Step
 
-- [x] Project scaffolding
-- [x] EEG nomenclature primer
-- [ ] CHB-MIT dataset ingestion pipeline
-- [ ] Rolling variance & AR1 implementation
-- [ ] First side-by-side seizure vs crash comparison
-- [ ] DFA (Detrended Fluctuation Analysis) module
-- [ ] Composite early warning score
-- [ ] Statistical validation across multiple events
+### Step 0 — Install dependencies
+Installs `yfinance`, `wfdb`, `scipy`, `matplotlib`, `seaborn`, `pandas`, `numpy` if not already present.
+
+### Step 1 — Imports & Styling
+Loads all libraries and sets a dark terminal-style plot theme using `matplotlib.rcParams`.
+
+### Step 2 — Load EEG Data
+Streams the CHB-MIT pediatric EEG recording `chb01/chb01_03` from PhysioNet using the `wfdb` library. This is a real recording from a child with epilepsy, sampled at 256 Hz. Seizure onset is at ~2996 seconds.  
+If PhysioNet is unavailable, a synthetic 4-phase signal is generated: *interictal (normal) → pre-ictal (building) → ictal (seizure) → post-ictal (recovery)*.
+
+### Step 3 — Load S&P 500 Data
+Downloads daily closing prices from 2006–2009 via `yfinance`. Computes **log returns** (the standard way to measure daily price changes in finance). The crash event is Lehman Brothers' collapse on **September 15, 2008**.
+
+### Step 4 — EWS Helper Functions
+Three functions:
+- `compute_ews(series, window, step)` — slides a rolling window over the signal and computes **variance**, **autocorrelation**, and **skewness** at each position
+- `kendall_tau(series)` — computes the **Kendall's Tau** statistic, which measures whether a signal is trending upward (positive τ means rising trend)
+- `norm01(array)` — normalizes values to [0, 1] so EEG and market metrics can be visually compared on the same scale
+
+Then applies these to:
+- **EEG**: 10-minute pre-seizure window, downsampled 10×, rolling window of 500 points (~20 seconds)
+- **Market**: 250 trading days before the crash, rolling window of 30 days
+
+### Step 5 — Visualization
+Generates a 5-row, 3-column figure:
+- **Row 0**: Raw EEG signal and S&P 500 price chart
+- **Rows 1–3**: Variance, Autocorrelation, |Skewness| for EEG (left), Market (center), Overlay (right) — each with a trend line and Kendall tau value
+- **Row 4**: Verdict table — color-coded summary of all 6 EWS metrics and whether the hypothesis holds
+
+### Conclusion Cell
+Prints a structured text summary of: hypothesis, assumptions, caveats, next steps, and references.
 
 ---
 
-## 📚 Key References
+## 📈 Results Interpretation
 
-- Scheffer et al. (2009). *Early-warning signals for critical transitions.* Nature.
-- Dakos et al. (2012). *Methods for detecting early warnings of critical transitions in time series.* PLOS ONE.
-- Kramer et al. (2012). *Human seizures self-terminate across spatial scales via a critical transition.* PNAS.
-- Haldane & May (2011). *Systemic risk in banking ecosystems.* Nature.
-- Sornette (2003). *Why Stock Markets Crash: Critical Events in Complex Financial Systems.*
+The **Verdict row** shows Kendall's τ for each of the 6 metric × system combinations:
 
----
+| τ value | Meaning |
+|---|---|
+| > 0.3 | **Strong rising trend** — strong support for CSD |
+| 0.1 – 0.3 | **Moderate rising trend** |
+| 0 – 0.1 | **Weak rising trend** |
+| < 0 | **No support** |
 
-## 🤝 Contributing
-
-This is an exploratory research project — ideas, domain knowledge, and dataset suggestions are very welcome. If you work in epileptology, computational neuroscience, or quantitative finance and find this interesting, open an issue or reach out.
-
----
-
-## 📝 License
-
-MIT License — see `LICENSE` for details.
+p-value < 0.05 (green) means the trend is statistically significant.
 
 ---
 
-*Built out of curiosity. The mathematics of collapse might be universal.*
+## ⚠️ Assumptions & Caveats
+
+- This is a **single-event study** (1 seizure, 1 crash) — not enough to make general claims
+- **Hindsight bias** — we already knew when the events happened, so windows were chosen accordingly
+- EEG uses only one frontal channel — full network dynamics are not captured
+- Market crashes have external causes (policy, geopolitics) that CSD models don't account for
+- Rising EWS does **not** guarantee an upcoming collapse — false positives exist
+
+---
+
+## 🔭 Future Work
+
+- Test across 20+ seizures and 5+ market crashes
+- Add spectral EWS: Hurst exponent, 1/f power-law slope
+- Apply graph-based EWS on full 23-channel EEG network
+- Extend to climate or ecological tipping points
+
+---
+
+## 📚 References
+
+- Scheffer et al. (2009) *Nature* 461:53–59 — CSD theory
+- Dakos et al. (2008) *PNAS* — Kendall tau EWS methodology
+- Meisel & Kuehn (2012) *PLOS ONE* — CSD before epileptic seizures
+- Goldberger et al. (2000) *Circulation* — PhysioNet / CHB-MIT database
+
+---
+
+## 🛠️ Requirements
+
+```
+numpy
+pandas
+matplotlib
+scipy
+seaborn
+yfinance
+wfdb
+jupyter
+```
+
+See `requirements.txt` for pinned versions.
+
+---
+
+*Built as an exploratory data science project applying complexity theory across neuroscience and finance.*
