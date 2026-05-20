@@ -62,7 +62,7 @@ critical-transitions-eeg-vs-market/
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/YOUR_USERNAME/critical-transitions-eeg-vs-market.git
+git clone https://github.com/vishnuayure/critical-transitions-eeg-vs-market.git
 cd critical-transitions-eeg-vs-market
 ```
 
